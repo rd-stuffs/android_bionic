@@ -64,9 +64,4 @@ __LIBC_HIDDEN__ void init_LD_DEBUG(const std::string& value);
 __LIBC_HIDDEN__ void __linker_log(int prio, const char* fmt, ...) __printflike(2, 3);
 __LIBC_HIDDEN__ void __linker_error(const char* fmt, ...) __printflike(1, 2);
 
-#define LD_DEBUG(what, x...) \
-  do { \
-    if (g_linker_debug_config.what) { \
-      __linker_log(ANDROID_LOG_INFO, x); \
-    } \
-  } while (false)
+#define LD_DEBUG(what, x...) do {} while (false)
