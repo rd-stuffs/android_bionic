@@ -49,7 +49,9 @@ DEFINE_IFUNC_FOR(memcmp) {
 
 typedef void* memcpy_func(void*, const void*, size_t);
 DEFINE_IFUNC_FOR(memcpy) {
-    if (arg->_hwcap & HWCAP_ASIMD) {
+    if (arg->_hwcap2 & HWCAP2_MOPS) {
+        RETURN_FUNC(memcpy_func, __memcpy_aarch64_mops);
+    } else if (arg->_hwcap & HWCAP_ASIMD) {
         RETURN_FUNC(memcpy_func, __memcpy_aarch64_simd);
     } else {
         RETURN_FUNC(memcpy_func, __memcpy_aarch64);
@@ -58,21 +60,27 @@ DEFINE_IFUNC_FOR(memcpy) {
 
 typedef void* memmove_func(void*, const void*, size_t);
 DEFINE_IFUNC_FOR(memmove) {
-    if (arg->_hwcap & HWCAP_ASIMD) {
+    if (arg->_hwcap2 & HWCAP2_MOPS) {
+        RETURN_FUNC(memmove_func, __memmove_aarch64_mops);
+    } else if (arg->_hwcap & HWCAP_ASIMD) {
         RETURN_FUNC(memmove_func, __memmove_aarch64_simd);
     } else {
         RETURN_FUNC(memmove_func, __memmove_aarch64);
     }
 }
 
+typedef void* memset_func(void*, int, size_t);
+DEFINE_IFUNC_FOR(memset) {
+    if (arg->_hwcap2 & HWCAP2_MOPS) {
+        RETURN_FUNC(memset_func, __memset_aarch64_mops);
+    } else {
+        RETURN_FUNC(memset_func, __memset_aarch64);
+    }
+}
+
 typedef int memrchr_func(const void*, int, size_t);
 DEFINE_IFUNC_FOR(memrchr) {
     RETURN_FUNC(memrchr_func, __memrchr_aarch64);
-}
-
-typedef int memset_func(void*, int, size_t);
-DEFINE_IFUNC_FOR(memset) {
-    RETURN_FUNC(memset_func, __memset_aarch64);
 }
 
 typedef char* stpcpy_func(char*, const char*, size_t);
